@@ -9,7 +9,7 @@ def run_once(f):
     def wrapper(*args, **kwargs):
         if not wrapper.has_run:
             wrapper.result = f(*args, **kwargs)
-             wrapper.has_run = True
+            wrapper.has_run = True
         return wrapper.result
     wrapper.has_run = False  # this peace of code is runned at creation.
     return wrapper
