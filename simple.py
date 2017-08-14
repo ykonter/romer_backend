@@ -1,10 +1,14 @@
 from pydrive.auth import GoogleAuth
-import os
-gauth = GoogleAuth()
-# gauth.LocalWebserverAuth()
+from pydrive.drive import GoogleDrive
+import pandas
 
-# save to file
-gauth.LoadCredentialsFile("credentials.txt")
+import os
+
+gauth = GoogleAuth()
+credential_file = "credentials.cnf"
+
+# save credentials to file (no longer login every run)
+gauth.LoadCredentialsFile(credential_file)
 if gauth.credentials is None:
     gauth.LocalWebserverAuth()
 elif gauth.access_token_expired:
@@ -12,32 +16,29 @@ elif gauth.access_token_expired:
 else:
     gauth.Authorize()
 
-gauth.SaveCredentialsFile("credentials.txt")
+# save current log-in credentials to file
+gauth.SaveCredentialsFile(credential_file)
 
-
-from pydrive.drive import GoogleDrive
+# create the 'drive' variable
 drive = GoogleDrive(gauth)
 
+def retrieve_file_as_xlsx(file_name="Contact Information (Responses)", local_name="fresh_list.xlsx"):
+    """look up file on google drive using the built up api-connection
+    and saves the file to the root folder as 'local_name'.
+    content of xlsx file is returnd as a in-memory dataframe
+    """
+    # find files
+    file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
+    f = [f for f in file_list if f['title'] == file_name]  # look for file in file-list
+    f = f[0]  # fetch the first hit
 
-# my own part
-file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
-#print(file_list)
-file_name = "Contact Information (Responses)"
-[print('title:: {}, id: {}'.format(file['title'], file['id'])) for file in file_list]
-f = [f for f in file_list if f['title'] == file_name]
-f = f[0] # only first hit
-# print(f) # found the file
-# m_t = {'application/vnd.google-apps.spreadsheet': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}
-# print(f.FetchMetadata(fields='mimeType'))
-my_file = drive.CreateFile({'id' : f['id']})
-my_file.GetContentFile("fresh_list.xlsx", mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    # download file
+    my_file = drive.CreateFile({'id' : f['id']})
+    my_file.GetContentFile(local_name, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
-#@file = drive.CreateFile({'id': "1ziLI3SUkMDxV9U8F9-sN33iSnAv3ySvvogfYw6xIOfU"})
-#content = file.GetContentString()
-#print(content)
+    # return a pandas dataframe
+    return pandas.read_excel(local_name)
 
-import pandas
-frame = pandas.read_excel('fresh_list.xlsx')
 frame['derived'] = frame['Voornamen'] + " " + frame['Achternaam']
 
 print(frame)
