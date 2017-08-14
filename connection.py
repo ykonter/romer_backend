@@ -63,4 +63,3 @@ def retrieve_file_as_xlsx(file_name="Contact Information (Responses)", local_nam
 
 ## load the module correctly
 drive()
-retrieve_file_as_xlsx()
