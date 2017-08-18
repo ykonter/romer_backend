@@ -2,6 +2,7 @@ import connection
 import f_connect
 import pandas
 from fuzzywuzzy import fuzz
+import util
 
 def fuzzy_lookup(test_frame, text_blob):
     """blob is ' '-seperated names to lookup fuzzaly
@@ -23,14 +24,11 @@ def fuzzy_lookup(test_frame, text_blob):
 
 def dump_frame_to_firebase(input_frame):
     for i, data in input_frame.iterrows():
-        d = data.to_dict()
-        d['index'] = i
-        d2=dict()
-        for key, value in d.items():
-            d2[key] = str(value)
-        print(d2)
-        print('')
-        f_connect.new_entry(d2, "/people")
+        d = util.cleanse_dict(data.to_dict())
+        d['index'] = str(i)
+        #f_connect.new_entry(d, "/people")
+        f_connect.set(str(i), d, "/people")
+
 
 if __name__ == "__main__":
     # fetch excel from server

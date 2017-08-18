@@ -6,6 +6,7 @@ You'll need the following packages:
 * pandas (pip install pandas; or conda install pandas)
 * fuzzywuzzy (pip install fuzzywuzzy) [for fuzzy string comparisons]
 * python-firebase (pip install python-firebase)
+* Pyrebase (pip install pyrebase) [replaces python-firebae]
 
 run using:
 python run.py
@@ -17,8 +18,9 @@ activate a_whole_new_world  # on windows
 conda install pandas
 conda install xlrd
 conda install requests
-pip install pydrive
+pip install pyrebase  # install this one first!
+pip install pydrive   # annoying dependancies!
 pip install fuzzywuzzy
-pip install python-firebase
+pip install python-firebase # depricated
 python run.py
 ```
