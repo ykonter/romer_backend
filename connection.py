@@ -44,7 +44,7 @@ def drive():
     return drive
 
 
-def retrieve_file_as_xlsx(file_name="Contact Information (Responses)", local_name="fresh_list.xlsx"):
+def retrieve_file_as_xlsx(file_name="Contact Information (Responses)", local_name="fresh_list.xlsx",converters = {}):
     """look up file on google drive using the built up api-connection
     and saves the file to the root folder as 'local_name'.
     content of xlsx file is returnd as a in-memory dataframe
@@ -59,7 +59,7 @@ def retrieve_file_as_xlsx(file_name="Contact Information (Responses)", local_nam
     my_file.GetContentFile(local_name, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
     # return a pandas dataframe
-    return pandas.read_excel(local_name)
+    return pandas.read_excel(local_name, converters=converters)
 
 ## load the module correctly
 drive()

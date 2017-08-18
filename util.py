@@ -20,3 +20,18 @@ def cleanse_dict(input_dictionary):
     for key, value in input_dictionary.items():
         d[key] = str(value)
     return d
+
+def memoize(f):
+    """elegant decorator to run functions only once in lifetime
+    """
+    res_dict = {}
+    def wrapper(input):
+        if input not in res_dict:
+            res_dict[input] = f(input)
+        return res_dict[input]
+
+    return wrapper
+
+
+    wrapper.has_run = False  # this peace of code is runned at creation.
+    return wrapper
