@@ -75,19 +75,29 @@ if __name__ == "__main__":
     frame['p2'] = ''
     frame['p2_c'] = ''
     frame['lineage']=''
+    frame['partner_index'] = ''
+    frame['parnter_c'] = ''
     short = frame[['Achternaam', 'Voornamen', 'Achternaam.1', u'Voornamen.1', 'Achternaam.2', 'Voornamen.2']]
     print(short)
 
     for i, row in frame.iterrows():
         # print('** parent 1 **')
         parent_name_dict = row[['Achternaam.1', 'Voornamen.1']].to_dict()
+        partner_name_dict = row[['Voornamen Partner', 'Achternaam Partner']].to_dict()
         names = [str(v) for v in parent_name_dict.values()]
+        p_names = [str(v) for v in partner_name_dict.values()]
         parent_name_blob = ' '.join(names)  # all parents names seperated by spaces
+        p_name_blob = ' '.join(p_names)
         res1 = fuzzy_lookup(frame[['Achternaam', 'Voornamen', 'Roepnaam']], parent_name_blob)
+        res1p = fuzzy_lookup(frame[['Achternaam', 'Voornamen', 'Roepnaam']], p_name_blob)
 
         if res1:
             frame.set_value(i, 'p1', res1['num'])
             frame.set_value(i, 'p1_c', res1['match'])
+
+        if res1p:
+            frame.set_value(i, 'partner_index', res1p['num'])
+            frame.set_value(i, 'parnter_c', res1p['match'])
 
 
         # print('** parent 2 **')
@@ -134,7 +144,7 @@ if __name__ == "__main__":
     frame.columns = [c if c != 'Land.1' else 'Land' for c in frame.columns]
     subset = frame[['Voornamen', 'Achternaam', 'Email', 'Telefoonnummer',
                     'Geboren', 'Plaats', 'GeboorteLand', 'Roepnaam', 'p1', 'p2', 'lineage', 'Adres en huisnummer',
-                    'Postcode', 'Land']]
+                    'Postcode', 'Land', 'partner_index', 'parnter_c']]
     # temp turn off upload
     print(subset)
     dump_frame_to_firebase(subset)
